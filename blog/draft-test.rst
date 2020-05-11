@@ -1,4 +1,4 @@
-.. post:: May 11, 2020
+.. post::
    :author: staff
    :tags: blog
 
@@ -6,5 +6,4 @@
 Draft Test
 ====================================================
 
-Draft test.
-
+A draft has no date.
