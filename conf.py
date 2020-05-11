@@ -19,7 +19,7 @@ import alabaster
 blog_path = 'blog'
 
 # The "title" for the blog, used in active pages.  Default is ``'Blog'``.
-blog_title = u'Advanced Computation Review'
+blog_title = u'Research Computing Topics'
 
 # Base URL for the website, required for generating feeds.
 # e.g. blog_baseurl = "http://example.com/"
@@ -189,7 +189,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Advanced Computation Review'
+project = u'Research Computing Topics'
 copyright = u'2020, HPC Research Group'
 author = u'HPC Research Group'
 
@@ -217,7 +217,7 @@ language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = []
+exclude_patterns = [ 'README.md' ]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -342,6 +342,6 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'AdvancedComputationReviewdoc'
+htmlhelp_basename = 'ReserchComputingTopics'
 
 
