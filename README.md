@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.com/research-computing-topics/blog.svg?branch=master)](https://travis-ci.com/research-computing-topics/blog)
+[![Build Status](https://travis-ci.com/research-computing-topics/research-computing-topics.github.io.svg?branch=master)](https://travis-ci.com/research-computing-topics/research-computing-topics.github.io)
 
-# Research Computing Topics Blog
+# Research Computing Topics
 
 
 ## Requirements for local testing
