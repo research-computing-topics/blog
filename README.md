@@ -32,7 +32,7 @@ Please place the source files in the right place.
 #### Blog
 
 
-Place the `.rst` file containing the blog post with
+Place the `.rst` file containing the blog post with the `.. posts::` directive, e.g.
 
 ```
 .. posts:: 2020-05-11
@@ -40,14 +40,15 @@ Place the `.rst` file containing the blog post with
    :tags: tag1, tag2
     
 ```
-in directory `blog/`. 
-Conveniently, enter the `blog/` directory and run the command `ablog post` to create a file template
-as the starting point of writing a new blog.
+in directory `blog/`. The blog post will automatically appear after a build.
+Conveniently, one can also enter the `blog/` directory and run the command `ablog post` to create a file template
+as the starting point to write a new blog.
 
-Posts without the date are drafts, not displayed in the post archive.
+Posts without the date are drafts, not displayed in the post archive. 
+A `.rst` file without the `.. posts::` directive is a regular document/page.
 
 
-#### Documents or Pages
+#### Regular (non-post) Documents or Pages
 
 Place the `.rst` files or tree under `class` and add a `toctree` entry in the top-level `index.rst` file.
 
