@@ -1,8 +1,0 @@
-*~
-sphinx/build/*
-*.pdf
-build/*
-*#
-sphinx/source/ipynb/.ipynb_checkpoints/*
-!slides/img/*.pdf
-

@@ -1,9 +1,0 @@
----
-classoption:
-   - t
-fontsize: 11pt
-indent: true
-header-includes: |
-  \usefonttheme[onlymath]{serif}
-  \usepackage{tcolorbox}
----

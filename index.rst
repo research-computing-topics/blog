@@ -17,10 +17,8 @@ Recent posts:
 
 Classes and Presentations:
 
-.. toctree::
-   :maxdepth: 1
+- `Sphinx tutorial <https://schuang.github.io/sphinx-tutorial/>`_
 
-   class/sphinx-tutorial/sphinx/source/index.rst
 
 .. toctree::
    :hidden:
