@@ -3,5 +3,5 @@
 About the group 
 ============================
 
-Group intro here.
+Coming soon...
 
