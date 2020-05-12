@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/research-computing-topics/research-computing-topics.github.io.svg?branch=master)](https://travis-ci.com/research-computing-topics/research-computing-topics.github.io)
+[![Build Status](https://travis-ci.com/research-computing-topics/blog.svg?branch=master)](https://travis-ci.com/research-computing-topics/blog)
 
 # Research Computing Topics
 
