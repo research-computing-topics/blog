@@ -9,20 +9,6 @@
     - e.g. an Anaconda installation, followed by `pip install -r requirements.txt` should work
 
 
-## Testing
-
-To build
-
-```
-ablog build
-```
-
-To view on a local computer
-
-```
-ablog serve
-```
-
 ## Writing
 
 Please place the source files in the right place.
