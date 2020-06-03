@@ -2,6 +2,7 @@
 
 # Research Computing Topics
 
+Discussion: [![Gitter](https://badges.gitter.im/research-computing-topics/community.svg)](https://gitter.im/research-computing-topics/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ## Requirements for local testing
 
