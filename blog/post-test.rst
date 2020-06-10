@@ -4,8 +4,7 @@
    :category:
 
 
-Test
+Welcome!
 ====================================================
 
-Blog test.
-
+Our articles and technical notes related to research computing will be posted here.
