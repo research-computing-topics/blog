@@ -1,6 +1,6 @@
 .. post:: June 11, 2020
    :author: Shao-Ching Huang
-   :tags: blog
+   :tags: rstudio
    :category:
 
 
