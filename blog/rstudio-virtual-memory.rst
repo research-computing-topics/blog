@@ -9,7 +9,9 @@ Virtual Memory Size of Launching RStudio on Hoffman2 Cluster
 
 We report that the virtual memory size of launching RStudio (version 1.1.456)
 is approximately 2.3GB (gigabytes) *without* loading any user data on
-Hoffman2 Cluster's compute nodes. The implication is that a job will have to
+Hoffman2 Cluster's compute nodes.
+This is compared to RStudio version 0.98, which consumes approximately 1.6GB of virtual memory at launch time.
+The implication is that a job will have to
 request at least this much memory in order to launch RStudio successfully.
 
 We launched RStudio 1.1.456 distributed by Anaconda using the following
