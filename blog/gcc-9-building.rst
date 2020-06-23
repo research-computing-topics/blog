@@ -145,10 +145,10 @@ The screen output should look similar to:
 
 
 **A word about where to run the build.** After downloading all of the files, we
-*can proceed to configure and build GCC, described in the next sections. These
-*steps are CPU-intensive. It is highly recommended to launch an interactive
-*session (via the job scheduler) to perform the operations on a compute node, as
-*the login nodes may be too loaded or memory-restricted for these tasks.
+can proceed to configure and build GCC, described in the next sections. These
+steps are CPU-intensive. It is highly recommended to launch an interactive
+session (via the job scheduler) to perform the operations on a compute node, as
+the login nodes may be too loaded or memory-restricted for these tasks.
 
 
 Configure
