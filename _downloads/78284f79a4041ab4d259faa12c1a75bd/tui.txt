@@ -1,0 +1,7 @@
+cpu,vmem,matlab_ver
+"Intel E5530",0.96,8.6
+"Intel E5-2670v3",0.941,8.6
+"Intel Gold 6140",0.941,8.6
+"Intel E5530",1.8,9.7
+"Intel E5-2670v3",3.03,9.7
+"Intel Gold 6140",3.857,9.7

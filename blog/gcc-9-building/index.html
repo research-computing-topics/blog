@@ -1,0 +1,501 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building GCC Compilers on an HPC Cluster &#8212; Research Computing Topics  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="author" title="About these documents" href="../../about/" />
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+  
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="building-gcc-compilers-on-an-hpc-cluster">
+<h1>Building GCC Compilers on an HPC Cluster<a class="headerlink" href="#building-gcc-compilers-on-an-hpc-cluster" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>The GNU Compiler Collection (GCC) is a leading open-source compiler suite that
+includes C, C++, Fortran and other languages. GCC is not to be confused with
+<code class="docutils literal notranslate"><span class="pre">gcc</span></code>, which is the GNU C compiler, one of the components in GCC. On  the
+Linux system of the cluster, the built-in GCC version may be too old  (e.g. on
+CentOS 6, this is GCC 4.4.7) for building (compiling) some applications that
+requires the language features not yet supported by that version of GCC. To
+build these applications on an HPC cluster, such as UCLA Hoffman2 cluster, it is
+necessary to install a newer version of GCC on the system. A common
+misconception is to assume that installing a new GCC requires Linux system
+administrator privilege. This is false. In fact, a regular user can install
+virtually any version of GCC available, or most open-source application
+programs, under the home directory independently using existing tools available
+on the cluster. In this technical note, we discuss the process of installing GCC
+9. We note by passing that the process of installing other versions of GCC is
+similar, if not identical. The process of installing many other GNU software
+packages is also largely the same.</p>
+</div>
+<div class="section" id="gcc-evolution">
+<h2>GCC Evolution<a class="headerlink" href="#gcc-evolution" title="Permalink to this headline">¶</a></h2>
+<p>Starting from GCC 5, GCC uses 2-number version naming convention (e.g. 9.3), in
+contrast to the 3-number version number used in prior releases (e.g. GCC 4.4.7).
+In the new 2-number versioning system, the first number is the major version
+number, implying that new features are introduced into that release. The second
+number is the minor version, denoting bug fixes that correct the reported issues
+introduced in the initial major release.  We note that, while the main
+documentation now uses the post-GCC-5 two-number versioning system, when
+downloading the GCC source for compiling, as discussed in later sections, a
+third number is still present in the file name (e.g. “0” in “gcc-9.3.0.tar.gz”).</p>
+<p>Here are some examples of the new features introduced in GCC major releases over
+the years:</p>
+<ul class="simple">
+<li><p>C++11 is added in and after GCC 4.8.4.</p></li>
+<li><p>In GCC 5, the default mode for C is changed to <code class="docutils literal notranslate"><span class="pre">-std=gnu11</span></code>
+instead of <code class="docutils literal notranslate"><span class="pre">-std=gnu89</span></code>.</p></li>
+<li><p>In GCC 6, the default mode for C++ is changed to <code class="docutils literal notranslate"><span class="pre">-std=gnu++14</span></code>
+instead of <code class="docutils literal notranslate"><span class="pre">gnu++98</span></code>.</p></li>
+<li><p>In GCC 7, a number of C++ language related changes, e.g. enforcing stricter
+rules when using templates, and the implementation of most of OpenACC 2.0a
+specification is added.</p></li>
+<li><p>In GCC 8, the C and C++ compilers can emit more fix-it hints.</p></li>
+<li><p>In GCC 9, there are further improvements of command line options and
+diagnostics information, and the implements most of OpenACC 2.5 specification
+is added.</p></li>
+<li><p>In GCC 10, the implement most of OpenACC 2.6 specification is added.</p></li>
+</ul>
+<p>More details about the changes in each release are available online. For
+example, <a class="reference external" href="https://gcc.gnu.org/gcc-9/changes.html">https://gcc.gnu.org/gcc-9/changes.html</a> are the new changes for GCC 9.</p>
+<p>Sometimes the build process needs to be modified (e.g. using alternative
+compiler options) if the application assumes certain default behavior of GCC
+that is different from that of the version being used.</p>
+</div>
+<div class="section" id="building-gcc">
+<h2>Building GCC<a class="headerlink" href="#building-gcc" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="download-the-source">
+<h3>Download the source<a class="headerlink" href="#download-the-source" title="Permalink to this headline">¶</a></h3>
+<p>Different versions of GCC can be freely downloaded from one of the GNU mirror
+sites, listed in <code class="docutils literal notranslate"><span class="pre">https://gcc.gnu.org/releases.html</span></code>. Here we use the <code class="docutils literal notranslate"><span class="pre">wget</span></code>
+command to download GCC 9.3 from the mirror site
+<code class="docutils literal notranslate"><span class="pre">https://mirrors.kernel.org/gnu/gcc</span></code> into the current directory, such as your
+scratch directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wget https://mirrors.kernel.org/gnu/gcc/gcc-9.3.0/gcc-9.3.0.tar.gz
+</pre></div>
+</div>
+<p>The downloaded <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> is a compressed file. It needs to be uncompressed and
+expanded before use, described in the next section.</p>
+</div>
+<div class="section" id="decompress-the-tar-gz-file">
+<h3>Decompress the .tar.gz file<a class="headerlink" href="#decompress-the-tar-gz-file" title="Permalink to this headline">¶</a></h3>
+<p>We can use the <code class="docutils literal notranslate"><span class="pre">tar</span></code> command to decompress (a.k.a. “un-gzip”) and to expand
+(a.k.a. “untar”) the tar file in one go:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ tar xvfz gcc-9.3.0.tar.gz
+$ cd gcc-9.3.0
+</pre></div>
+</div>
+<p>Several arguments have been passed to the <code class="docutils literal notranslate"><span class="pre">tar</span></code> command:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>“x”: expand the tar file back to its original file structure (i.e. individual</dt><dd><p>files)</p>
+</dd>
+</dl>
+</li>
+<li><p>“f”: use the file</p></li>
+<li><p>“v”: display the progress on screen</p></li>
+<li><p>“z”: decompress the gzip’d <code class="docutils literal notranslate"><span class="pre">.gz</span></code> file</p></li>
+</ul>
+<p>See <a class="reference external" href="https://www.gnu.org/software/tar/manual/">https://www.gnu.org/software/tar/manual/</a> for more details about <code class="docutils literal notranslate"><span class="pre">tar</span></code>.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">gcc-9.3.0</span></code> directory, there should be many files, including
+<code class="docutils literal notranslate"><span class="pre">configure</span></code>, which is the script we will use next, as well as several
+documentation files such as <code class="docutils literal notranslate"><span class="pre">README</span></code> and <code class="docutils literal notranslate"><span class="pre">NEWS</span></code>.</p>
+</div>
+<div class="section" id="download-the-prerequisites">
+<h3>Download the prerequisites<a class="headerlink" href="#download-the-prerequisites" title="Permalink to this headline">¶</a></h3>
+<p>Building GCC requires a number of external libraries (e.g. <a class="reference external" href="https://gmplib.org/">GMP</a>). They need to be installed prior to installing GCC.
+Care should be taken about the versions of these libraries because GCC requires
+matching versions (or ranges of versions) of these libraries; incompatible
+external libraries result in a broken GCC build. In the <code class="docutils literal notranslate"><span class="pre">gcc-9.3.0/</span></code> directory
+from the last step, this script is run to download the required external
+libraries:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./contrib/download_prerequisites
+</pre></div>
+</div>
+<p>The screen output should look similar to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2020</span><span class="o">-</span><span class="mf">05.</span><span class="o">../</span><span class="n">pub</span><span class="o">/</span><span class="n">gcc</span><span class="o">/</span><span class="n">infrastructure</span><span class="o">/</span><span class="n">gmp</span><span class="o">-</span><span class="mf">6.1</span><span class="o">.</span><span class="mf">0.</span><span class="n">tar</span><span class="o">.</span><span class="n">bz2</span> <span class="p">[</span><span class="mi">2383840</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="s2">&quot;./gmp-6.1.0.tar.bz2&quot;</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mf">05.</span><span class="o">../</span><span class="n">pub</span><span class="o">/</span><span class="n">gcc</span><span class="o">/</span><span class="n">infrastructure</span><span class="o">/</span><span class="n">mpfr</span><span class="o">-</span><span class="mf">3.1</span><span class="o">.</span><span class="mf">4.</span><span class="n">tar</span><span class="o">.</span><span class="n">bz2</span> <span class="p">[</span><span class="mi">1279284</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="s2">&quot;./mpfr-3.1.4.tar.bz2&quot;</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mf">05.</span><span class="o">../</span><span class="n">pub</span><span class="o">/</span><span class="n">gcc</span><span class="o">/</span><span class="n">infrastructure</span><span class="o">/</span><span class="n">mpc</span><span class="o">-</span><span class="mf">1.0</span><span class="o">.</span><span class="mf">3.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span> <span class="p">[</span><span class="mi">669925</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="s2">&quot;./mpc-1.0.3.tar.gz&quot;</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="mi">2020</span><span class="o">-</span><span class="mf">05.</span><span class="o">../</span><span class="n">pub</span><span class="o">/</span><span class="n">gcc</span><span class="o">/</span><span class="n">infrastructure</span><span class="o">/</span><span class="n">isl</span><span class="o">-</span><span class="mf">0.18</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">bz2</span> <span class="p">[</span><span class="mi">1658291</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="s2">&quot;./isl-0.18.tar.bz2&quot;</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">gmp</span><span class="o">-</span><span class="mf">6.1</span><span class="o">.</span><span class="mf">0.</span><span class="n">tar</span><span class="o">.</span><span class="n">bz2</span><span class="p">:</span> <span class="n">OK</span>
+<span class="n">mpfr</span><span class="o">-</span><span class="mf">3.1</span><span class="o">.</span><span class="mf">4.</span><span class="n">tar</span><span class="o">.</span><span class="n">bz2</span><span class="p">:</span> <span class="n">OK</span>
+<span class="n">mpc</span><span class="o">-</span><span class="mf">1.0</span><span class="o">.</span><span class="mf">3.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span><span class="p">:</span> <span class="n">OK</span>
+<span class="n">isl</span><span class="o">-</span><span class="mf">0.18</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">bz2</span><span class="p">:</span> <span class="n">OK</span>
+<span class="n">All</span> <span class="n">prerequisites</span> <span class="n">downloaded</span> <span class="n">successfully</span><span class="o">.</span>
+</pre></div>
+</div>
+<p><strong>A word about where to run the build.</strong> After downloading all of the files, we
+can proceed to configure and build GCC, described in the next sections. These
+steps are CPU-intensive. It is highly recommended to launch an interactive
+session (via the job scheduler) to perform the operations on a compute node, as
+the login nodes may be too loaded or memory-restricted for these tasks.</p>
+</div>
+<div class="section" id="configure">
+<h3>Configure<a class="headerlink" href="#configure" title="Permalink to this headline">¶</a></h3>
+<p>Before building (compiling) GCC, we need to configure it by passing several
+parameters to the configure script and also let the configure script to detect
+certain machine specific parameters of the cluster.</p>
+<p>One requirement of GCC is that one cannot run the configure script directly in
+the same directory where the <code class="docutils literal notranslate"><span class="pre">configure</span></code> is located. We need to create a
+separate, empty directory and run the configure script from the new directory.
+These steps can be done by the following commands:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd ..             # go up one level from gcc-9.3.0
+$ mkdir gcc_build
+</pre></div>
+</div>
+<p>Before proceeding to the next step, let’s confirm that you have the two
+directories at the same level:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ls
+gcc-9.3.0  gcc-9.3.0.tar.gz  gcc_build
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">gcc-9.3.0</span></code> is the result of expanding <code class="docutils literal notranslate"><span class="pre">gcc-9.3.0.tar.gz</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">gcc_build</span></code> is the new empty directory where we will run the configure script.
+These two directories may be deleted after GCC is successfully built and
+installed.</p>
+<p>Enter the <code class="docutils literal notranslate"><span class="pre">gcc_build</span></code> directory and run the configure script (located in
+another directory, <code class="docutils literal notranslate"><span class="pre">gcc-9.3.0</span></code>), assuming that you will install GCC to your
+directory <code class="docutils literal notranslate"><span class="pre">$HOME/sw/gcc/9.3.0</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd gcc_build
+$ ../gcc-9.3.0/configure \
+  --prefix=$HOME/sw/gcc/9.3.0 \
+  --disable-multilib \
+  --enable-languages=c,c++,fortran,jit \
+  --enable-checking=release \
+  --enable-host-shared
+</pre></div>
+</div>
+<p>The meanings of the parameters are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--prefix</span></code>: the directory where GCC will be installed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--disable-multilib</span></code>: we will build only the 64-bit version of GCC.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--enable-languages</span></code>: only the compilers of the specified languages will
+be built; GCC contains more other languages.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--enable-checking</span></code>: Enable additional checkings for stage1 of compiler</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--enable-host-shared</span></code>: Build host code as shared library;
+this is needed for jit.</p></li>
+</ul>
+<p>See <a class="reference external" href="https://gcc.gnu.org/install/configure.html">https://gcc.gnu.org/install/configure.html</a> for more information about
+configuring GCC.</p>
+</div>
+<div class="section" id="compile">
+<h3>Compile<a class="headerlink" href="#compile" title="Permalink to this headline">¶</a></h3>
+<p>After running configure, we are ready to build GCC. We are going to build GCC
+using the system default compiler, e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ which gcc
+/usr/bin/gcc
+$ gcc --version
+gcc (GCC) 4.4.7 20120313 (Red Hat 4.4.7-23)
+Copyright (C) 2010 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+</pre></div>
+</div>
+<p>To build GCC, simply issue the <code class="docutils literal notranslate"><span class="pre">make</span></code> command in the <cite>gcc_build</cite> directory
+(where we just ran the <code class="docutils literal notranslate"><span class="pre">configure</span></code> command in the previous section). We add
+<code class="docutils literal notranslate"><span class="pre">-j</span> <span class="pre">4</span></code> to enable parallel build (using multiple CPU cores) to accelerate the
+build process:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ make -j 4
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">make</span></code> step takes a while to complete. If the <code class="docutils literal notranslate"><span class="pre">make</span></code> step is successful,
+<code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> will install GCC to the directory specified by <code class="docutils literal notranslate"><span class="pre">--prefix</span></code> in
+the configure step.</p>
+</div>
+<div class="section" id="test">
+<h3>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h3>
+<p>It is a good idea to run GCC tests to see if it is correctly built. Running
+tests takes a while to complete. To run GCC tests, run the following command in
+the build directory (e.g. <code class="docutils literal notranslate"><span class="pre">gcc_build</span></code> from previous sections):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ make -k check
+</pre></div>
+</div>
+</div>
+<div class="section" id="install">
+<h3>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h3>
+<p>From the build directory (e.g. <code class="docutils literal notranslate"><span class="pre">gcc_build</span></code>), run this command to install GCC
+to the target directory, specified by <code class="docutils literal notranslate"><span class="pre">--prefix</span></code> in the configure step:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ make install
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="using-gcc">
+<h2>Using GCC<a class="headerlink" href="#using-gcc" title="Permalink to this headline">¶</a></h2>
+<p>To use the newly installed GCC, the corresponding file system paths need to be
+added to the environment variables:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>install_dir=$HOME/sw/gcc/9.3.0       # GCC install directory
+export PATH=$install_dir/bin:$PATH
+export LD_LIBRARY_PATH=$install_dir/lib64:\
+$install_dir/lib:$GCC_DIR/lib/gcc/x86_64-pc-linux-gnu/9.3.0:\
+$install_dir/libexec/gcc/x86_64-pc-linux-gnu/9.3.0:\
+$LD_LIBRARY_PATH
+unset install_dir
+</pre></div>
+</div>
+<p>The temporary variable <code class="docutils literal notranslate"><span class="pre">install_dir</span></code> corresponds to the the path set by
+<code class="docutils literal notranslate"><span class="pre">--prefix</span></code> in the configure step, discussed previously. After using its value
+in <code class="docutils literal notranslate"><span class="pre">PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code>, it can be removed, or “unset” as shown
+above. The purpose of the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable is for the GCC commands
+(e.g. typing <code class="docutils literal notranslate"><span class="pre">gcc</span></code>) to be found automatically without a full path. The purpose
+of the <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code> environment variable is for the shared libraries
+associated with GCC be found at run time. To make <code class="docutils literal notranslate"><span class="pre">$PATH</span></code> and
+<code class="docutils literal notranslate"><span class="pre">$LD_LIBRARY_PATH</span></code> permanent, this block can be added to <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> or
+<code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code>.</p>
+<p>The Linux operating system uses the file system paths in <code class="docutils literal notranslate"><span class="pre">PATH</span></code> and
+<code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code> in the left-to-right order. We added the newly installed GCC
+at the beginning of these environment variables, so they are found (and used) in
+the current shell, even if there are paths to other versions of GCC later in the
+paths.</p>
+</div>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>This technical note summarizes the essential steps of installing GCC compilers
+within a regular user’s own directory without requiring superuser (or system
+administrator) privilege in an HPC cluster environment, such as UCLA Hoffman2
+cluster. The procedure is expected to be the same, except for the version
+numbers, for similar GCC versions, at least those released in recent past or in
+near future.</p>
+</div>
+<div class="section" id="acknowledgement">
+<h2>Acknowledgement<a class="headerlink" href="#acknowledgement" title="Permalink to this headline">¶</a></h2>
+<p>The author wishes to thank Dr. B. Winjum for his helpful comments on an earlier draft of this report.</p>
+</div>
+<div class="section" id="appendix">
+<h2>Appendix<a class="headerlink" href="#appendix" title="Permalink to this headline">¶</a></h2>
+<p>The script to run the entire procedure described in this note is available at:</p>
+<p><a class="reference external" href="https://gist.github.com/schuang/5df8dd3c7c17067cdeadc09d607f7cfa">https://gist.github.com/schuang/5df8dd3c7c17067cdeadc09d607f7cfa</a></p>
+</div>
+</div>
+
+  <div class="section">
+  
+    
+
+
+<div class="section">
+  <span style="float: left;">
+  
+  Previous: 
+  <a href="../post-test/">
+    
+    Welcome!
+  </a>
+  
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right;">
+  
+  Next: 
+  <a href="../julia-avx512/">
+    Julia AVX512 Issue and Workaround
+    
+  </a>
+  
+  </span>
+</div>
+
+  
+  
+  </div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../">Research Computing Topics</a></h1>
+
+
+
+
+
+
+
+
+
+  
+  
+  <h2>
+  
+  
+    2020-05-20
+  
+  </h2>
+
+  <ul>
+    
+
+  
+  <li id="author"><span>Author:</span>
+    
+      
+      <a href="../author/shao-ching-huang/">Shao-Ching Huang</a>
+      
+    </li>
+  
+
+  
+
+  
+
+  
+
+  
+  <li id="tags"><span>Tags:
+      </span>
+    
+      
+      <a href="../tag/gcc/">gcc</a>
+      
+    
+      
+      <a href="../tag/gnu/">gnu</a>
+      
+    </li>
+  
+  
+  </ul>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about/">About the group</a></li>
+</ul>
+
+
+  <h3><a href="../">Recent Posts</a></h3>
+  <ul>
+    
+    
+      <li><a href="../rstudio-virtual-memory/">11 June - Virtual Memory Size of Launching RStudio on Hoffman2 Cluster</a></li>
+    
+      <li><a href="../matlab-virtual-memory/">08 June - Virtual Memory Consumption of Matlab Graphical User Interface on Hoffman2 Cluster</a></li>
+    
+      <li><a href="../julia-avx512/">08 June - Julia AVX512 Issue and Workaround</a></li>
+    
+      <li><a href="../../julia-avx512/">08 June - Julia AVX512 Issue and Workaround</a></li>
+    
+      <li><a href="../post-test/">11 May - Welcome!</a></li>
+    
+  </ul>
+
+  <h3><a href="../tag/">Tags</a></h3>
+  <style type="text/css">
+    ul.ablog-cloud {list-style: none; overflow: auto;}
+    ul.ablog-cloud li {float: left; height: 20pt; line-height: 18pt; margin-right: 5px;}
+    ul.ablog-cloud a {text-decoration: none; vertical-align: middle;}
+    li.ablog-cloud-1{font-size: 80%;}
+    li.ablog-cloud-2{font-size: 95%;}
+    li.ablog-cloud-3{font-size: 110%;}
+    li.ablog-cloud-4{font-size: 125%;}
+    li.ablog-cloud-5{font-size: 140%;}
+  </style>
+  <ul class="ablog-cloud">
+    
+      
+      <li class="ablog-cloud ablog-cloud-5">
+        <a href="../tag/blog/">blog</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../tag/gcc/">gcc</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../tag/gnu/">gnu</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../tag/matlab/">matlab</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../tag/rstudio/">rstudio</a></li>
+      
+    
+  </ul>
+
+  <h3><a href="../archive/">Archives</a></h3>
+  <ul>
+  
+    
+    <li><a href="../2020/">2020 (6)</a></li>
+    
+  
+  </ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, HPC Research Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/blog/gcc-9-building.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

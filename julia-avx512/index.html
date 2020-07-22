@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Julia AVX512 Issue and Workaround &#8212; Research Computing Topics  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="author" title="About these documents" href="../about/" />
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+  
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="julia-avx512-issue-and-workaround">
+<h1>Julia AVX512 Issue and Workaround<a class="headerlink" href="#julia-avx512-issue-and-workaround" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="problem-description">
+<h2>Problem description<a class="headerlink" href="#problem-description" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://docs.julialang.org/">Julia</a> is a high-level dynamic programming
+language designed for numerical computing and computational sciences.  One of
+the core components in Julia is numerical linear algebra. Like many other
+computational software packages, Julia follows a layered approach and depends
+on a third-party optimized implementation of <a class="reference external" href="https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms">BLAS (Basic Linear Algebra
+Subprograms)</a>.  By
+default, Julia uses <a class="reference external" href="https://github.com/xianyi/OpenBLAS">OpenBLAS</a>, one of
+the popular implementations of BLAS.  Recently we noticed one anormaly when
+running Julia on Intel “Skylake” CPUs that are AVX512-capable but have AVX512
+disabled (e.g.  this can happen on a virtual machine) with error message:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ julia
+Invalid instruction at 0x7fc4868b3ba8: 0x62, 0xf1, 0x7d, 0x48, 0xef, 0xc0, 0xc3, 0x90, 0x89, 0xc2, 0x83, 0xe2, 0xe0, 0x0f, 0x8e
+signal (4): Illegal instruction
+in expression starting at none:0
+dot_compute at /u/local/apps/julia/1.2.0/bin/../lib/julia/libopenblas64_.so (unknown line)
+Allocations: 3163 (Pool: 3154; Big: 9); GC: 0
+Illegal instruction
+</pre></div>
+</div>
+<p>Note that the same Julia executable works on the AVX512-enabled CPUs as expected.</p>
+<p>As the error message indicates, the problem is traced back to OpenBLAS. After
+some research, it appears to be a problem of the AVX512 detection mechanism in
+OpenBLAS which has been fixed after OpenBLAS 0.3.6, as stated in OpenBLAS
+release notes (<a class="reference external" href="https://github.com/xianyi/OpenBLAS/releases">https://github.com/xianyi/OpenBLAS/releases</a>), e.g.</p>
+<ul class="simple">
+<li><p>OpenBLAS 0.3.6: “the AVX512 DGEMM kernel has been disabled again due to unsolved problems”</p></li>
+<li><p>OpenBLAS 0.3.7: “the build-time logic for detection of AVX512 availability in the processor and compiler was fixed”</p></li>
+<li><p>OpenBLAS 0.3.8: “a new AVX512 DGEMM kernel was added and the AVX512 SGEMM kernel was significantly improved”</p></li>
+</ul>
+<p>As of this writing, the OpenBLAS version shipped with Julia 1.4.2
+(<a class="reference external" href="https://github.com/JuliaLang/julia/releases/download/v1.4.2/julia-1.4.2-full.tar.gz">https://github.com/JuliaLang/julia/releases/download/v1.4.2/julia-1.4.2-full.tar.gz</a>)
+is OpenBLAS 0.3.5 but a patch <code class="docutils literal notranslate"><span class="pre">openblas-skylakexdgemm.patch</span></code> is available</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cat deps/openblas.version
+OPENBLAS_BRANCH=v0.3.5
+OPENBLAS_SHA1=eebc18928715775c9ed254684edee16e4efe0342
+</pre></div>
+</div>
+<p>We note that Julia 1.1.1 from Anaconda uses OpenBLAS 0.3.9 appears to be free
+of this problem.  We performed two tests to confirm that issue comes from
+OpenBLAS.</p>
+</div>
+<div class="section" id="test-1">
+<h2>Test 1<a class="headerlink" href="#test-1" title="Permalink to this headline">¶</a></h2>
+<p>We replaced the shared library file  of OpenBLAS 0.3.5
+<code class="docutils literal notranslate"><span class="pre">libopenblas64_.0.3.5.so</span></code> with OpenBLAS 0.3.9 <code class="docutils literal notranslate"><span class="pre">libopenblasp-r0.3.9.so</span></code> (and
+changed the symbolic links <code class="docutils literal notranslate"><span class="pre">libopenblas64_.so</span></code> and <code class="docutils literal notranslate"><span class="pre">libopenblas64_.so.0</span></code>
+accordingly), the same Julia executable binary that exhibits the error message
+above now works (but has an initialization error due to
+<code class="docutils literal notranslate"><span class="pre">openblas_get_config64_</span></code> because of the brute-force shared library file
+replacement.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./julia
+WARNING: Error during initialization of module LinearAlgebra:
+ErrorException(&quot;could not load symbol &quot;openblas_get_config64_&quot;:
+/tmp/tmp.v12ytpLZik/1.2.0/bin/../lib/julia/libopenblas64_.so: undefined symbol: openblas_get_config64_&quot;)
+               _
+   _       _ _(_)_     |  Documentation: https://docs.julialang.org
+  (_)     | (_) (_)    |
+   _ _   _| |_  __ _   |  Type &quot;?&quot; for help, &quot;]?&quot; for Pkg help.
+  | | | | | | |/ _` |  |
+  | | |_| | | | (_| |  |  Version 1.2.0 (2019-08-20)
+ _/ |\__&#39;_|_|_|\__&#39;_|  |  Official https://julialang.org/ release
+|__/                   |
+
+julia&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="test-2">
+<h2>Test 2<a class="headerlink" href="#test-2" title="Permalink to this headline">¶</a></h2>
+<p>Another test is performed by passing the environment varialbe
+<code class="docutils literal notranslate"><span class="pre">OPENBLAS_CORETYPE</span></code> to “fool” OpenBLAS that the CPU is not Skylake (e.g.
+“haswell”, as shown below) so it does not execute Skylake-specific functions
+causing the crash. The impact on performance is left as a future exercise.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ julia
+Invalid instruction at 0x7f77ef7e3ba8: 0x62, 0xf1, 0x7d, 0x48, 0xef, 0xc0, 0xc3, 0x90, 0x89, 0xc2, 0x83, 0xe2, 0xe0, 0x0f, 0x8e
+
+signal <span class="o">(</span><span class="m">4</span><span class="o">)</span>: Illegal instruction
+in expression starting at none:0
+dot_compute at /u/local/apps/julia/1.2.0/bin/../lib/julia/libopenblas64_.so <span class="o">(</span>unknown line<span class="o">)</span>
+Allocations: <span class="m">3162</span> <span class="o">(</span>Pool: <span class="m">3154</span><span class="p">;</span> Big: <span class="m">8</span><span class="o">)</span><span class="p">;</span> GC: <span class="m">0</span>
+Illegal instruction <span class="o">(</span>core dumped<span class="o">)</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nv">OPENBLAS_CORETYPE</span><span class="o">=</span>haswell julia
+               _
+   _       _ _<span class="o">(</span>_<span class="o">)</span>_     <span class="p">|</span>  Documentation: https://docs.julialang.org
+  <span class="o">(</span>_<span class="o">)</span>     <span class="p">|</span> <span class="o">(</span>_<span class="o">)</span> <span class="o">(</span>_<span class="o">)</span>    <span class="p">|</span>
+   _ _   _<span class="p">|</span> <span class="p">|</span>_  __ _   <span class="p">|</span>  Type <span class="s2">&quot;?&quot;</span> <span class="k">for</span> help, <span class="s2">&quot;]?&quot;</span> <span class="k">for</span> Pkg help.
+  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>/ _<span class="sb">`</span> <span class="p">|</span>  <span class="p">|</span>
+  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>_<span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="o">(</span>_<span class="p">|</span> <span class="p">|</span>  <span class="p">|</span>  Version <span class="m">1</span>.2.0 <span class="o">(</span><span class="m">2019</span>-08-20<span class="o">)</span>
+ _/ <span class="p">|</span><span class="se">\_</span>_<span class="s1">&#39;_|_|_|\__&#39;</span>_<span class="p">|</span>  <span class="p">|</span>  Official https://julialang.org/ release
+<span class="p">|</span>__/                   <span class="p">|</span>
+
+julia&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>On AVX512-enabled CPUs with AVX512 disabled, Julia could crash due to an
+OpenBLAS issue. The issue can be fixed by using either a patch or a new
+OpenBLAS version.</p>
+</div>
+</div>
+
+  <div class="section">
+  
+    
+
+
+<div class="section">
+  <span style="float: left;">
+  
+  Previous: 
+  <a href="../blog/julia-avx512/">
+    
+    Julia AVX512 Issue and Workaround
+  </a>
+  
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right;">
+  
+  Next: 
+  <a href="../blog/matlab-virtual-memory/">
+    Virtual Memory Consumption of Matlab Graphical User Interface on Hoffman2 Cluster
+    
+  </a>
+  
+  </span>
+</div>
+
+  
+  
+  </div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../">Research Computing Topics</a></h1>
+
+
+
+
+
+
+
+
+
+  
+  
+  <h2>
+  
+  
+    2020-06-08
+  
+  </h2>
+
+  <ul>
+    
+
+  
+  <li id="author"><span>Author:</span>
+    
+      
+      <a href="../blog/author/shao-ching-huang/">Shao-Ching Huang</a>
+      
+    </li>
+  
+
+  
+
+  
+
+  
+
+  
+  <li id="tags"><span>Tag:</span>
+    
+      
+      <a href="../blog/tag/blog/">blog</a>
+      
+    </li>
+  
+  
+  </ul>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/">About the group</a></li>
+</ul>
+
+
+  <h3><a href="../blog/">Recent Posts</a></h3>
+  <ul>
+    
+    
+      <li><a href="../blog/rstudio-virtual-memory/">11 June - Virtual Memory Size of Launching RStudio on Hoffman2 Cluster</a></li>
+    
+      <li><a href="../blog/matlab-virtual-memory/">08 June - Virtual Memory Consumption of Matlab Graphical User Interface on Hoffman2 Cluster</a></li>
+    
+      <li><a href="../blog/julia-avx512/">08 June - Julia AVX512 Issue and Workaround</a></li>
+    
+      <li><a href="../blog/gcc-9-building/">20 May - Building GCC Compilers on an HPC Cluster</a></li>
+    
+      <li><a href="../blog/post-test/">11 May - Welcome!</a></li>
+    
+  </ul>
+
+  <h3><a href="../blog/tag/">Tags</a></h3>
+  <style type="text/css">
+    ul.ablog-cloud {list-style: none; overflow: auto;}
+    ul.ablog-cloud li {float: left; height: 20pt; line-height: 18pt; margin-right: 5px;}
+    ul.ablog-cloud a {text-decoration: none; vertical-align: middle;}
+    li.ablog-cloud-1{font-size: 80%;}
+    li.ablog-cloud-2{font-size: 95%;}
+    li.ablog-cloud-3{font-size: 110%;}
+    li.ablog-cloud-4{font-size: 125%;}
+    li.ablog-cloud-5{font-size: 140%;}
+  </style>
+  <ul class="ablog-cloud">
+    
+      
+      <li class="ablog-cloud ablog-cloud-5">
+        <a href="../blog/tag/blog/">blog</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../blog/tag/gcc/">gcc</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../blog/tag/gnu/">gnu</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../blog/tag/matlab/">matlab</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../blog/tag/rstudio/">rstudio</a></li>
+      
+    
+  </ul>
+
+  <h3><a href="../blog/archive/">Archives</a></h3>
+  <ul>
+  
+    
+    <li><a href="../blog/2020/">2020 (6)</a></li>
+    
+  
+  </ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, HPC Research Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/julia-avx512.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

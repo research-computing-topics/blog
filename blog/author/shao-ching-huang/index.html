@@ -1,0 +1,390 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posts by Shao-Ching Huang &#8212; Research Computing Topics  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="author" title="About these documents" href="../../../about/" />
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" />
+  
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <link rel="alternate" type="application/atom+xml"  href="../shao-ching-huang/atom.xml" title="Posts by Shao-Ching Huang">
+  
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section">
+
+    <h1>
+      
+      Posts by
+      
+      Shao-Ching Huang
+      
+    </h1>
+    
+    
+
+    <div class="section">
+      <h2><a href="../../rstudio-virtual-memory/">Virtual Memory Size of Launching RStudio on Hoffman2 Cluster</a></h2>
+
+      <ul class="ablog-archive">
+      <li>
+      
+        2020-06-11
+      
+      </li>
+        
+
+  
+  <li id="author"><span>Author:</span>
+    
+      
+      <a href="#">Shao-Ching Huang</a>
+      
+    </li>
+  
+
+  
+
+  
+
+  
+
+  
+  <li id="tags"><span>Tag:</span>
+    
+      
+      <a href="../../tag/rstudio/">rstudio</a>
+      
+    </li>
+  
+  </ul>
+      <p>We report that the virtual memory size of launching RStudio (version 1.1.456)
+is approximately 2.3GB (gigabytes) <em>without</em> loading any user data on
+Hoffman2 Cluster’s compute nodes.
+This is compared to RStudio version 0.98, which consumes approximately 1.6GB of virtual memory at launch time.
+The implication is that a job will have to
+request at least this much memory in order to launch RStudio successfully.</p>
+
+      <p><a href="../../rstudio-virtual-memory/">Read more ...</a></p>
+      <hr>
+    </div>
+    
+
+    <div class="section">
+      <h2><a href="../../julia-avx512/">Julia AVX512 Issue and Workaround</a></h2>
+
+      <ul class="ablog-archive">
+      <li>
+      
+        2020-06-08
+      
+      </li>
+        
+
+  
+  <li id="author"><span>Author:</span>
+    
+      
+      <a href="#">Shao-Ching Huang</a>
+      
+    </li>
+  
+
+  
+
+  
+
+  
+
+  
+  <li id="tags"><span>Tag:</span>
+    
+      
+      <a href="../../tag/blog/">blog</a>
+      
+    </li>
+  
+  </ul>
+      <p><a class="reference external" href="https://docs.julialang.org/">Julia</a> is a high-level dynamic programming
+language designed for numerical computing and computational sciences.  One of
+the core components in Julia is numerical linear algebra. Like many other
+computational software packages, Julia follows a layered approach and depends
+on a third-party optimized implementation of <a class="reference external" href="https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms">BLAS (Basic Linear Algebra
+Subprograms)</a>.  By
+default, Julia uses <a class="reference external" href="https://github.com/xianyi/OpenBLAS">OpenBLAS</a>, one of
+the popular implementations of BLAS.  Recently we noticed one anormaly when
+running Julia on Intel “Skylake” CPUs that are AVX512-capable but have AVX512
+disabled (e.g.  this can happen on a virtual machine) with error message:</p>
+
+      <p><a href="../../julia-avx512/">Read more ...</a></p>
+      <hr>
+    </div>
+    
+
+    <div class="section">
+      <h2><a href="../../../julia-avx512/">Julia AVX512 Issue and Workaround</a></h2>
+
+      <ul class="ablog-archive">
+      <li>
+      
+        2020-06-08
+      
+      </li>
+        
+
+  
+  <li id="author"><span>Author:</span>
+    
+      
+      <a href="#">Shao-Ching Huang</a>
+      
+    </li>
+  
+
+  
+
+  
+
+  
+
+  
+  <li id="tags"><span>Tag:</span>
+    
+      
+      <a href="../../tag/blog/">blog</a>
+      
+    </li>
+  
+  </ul>
+      <p><a class="reference external" href="https://docs.julialang.org/">Julia</a> is a high-level dynamic programming
+language designed for numerical computing and computational sciences.  One of
+the core components in Julia is numerical linear algebra. Like many other
+computational software packages, Julia follows a layered approach and depends
+on a third-party optimized implementation of <a class="reference external" href="https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms">BLAS (Basic Linear Algebra
+Subprograms)</a>.  By
+default, Julia uses <a class="reference external" href="https://github.com/xianyi/OpenBLAS">OpenBLAS</a>, one of
+the popular implementations of BLAS.  Recently we noticed one anormaly when
+running Julia on Intel “Skylake” CPUs that are AVX512-capable but have AVX512
+disabled (e.g.  this can happen on a virtual machine) with error message:</p>
+
+      <p><a href="../../../julia-avx512/">Read more ...</a></p>
+      <hr>
+    </div>
+    
+
+    <div class="section">
+      <h2><a href="../../gcc-9-building/">Building GCC Compilers on an HPC Cluster</a></h2>
+
+      <ul class="ablog-archive">
+      <li>
+      
+        2020-05-20
+      
+      </li>
+        
+
+  
+  <li id="author"><span>Author:</span>
+    
+      
+      <a href="#">Shao-Ching Huang</a>
+      
+    </li>
+  
+
+  
+
+  
+
+  
+
+  
+  <li id="tags"><span>Tags:
+      </span>
+    
+      
+      <a href="../../tag/gcc/">gcc</a>
+      
+    
+      
+      <a href="../../tag/gnu/">gnu</a>
+      
+    </li>
+  
+  </ul>
+      <p>The GNU Compiler Collection (GCC) is a leading open-source compiler suite that
+includes C, C++, Fortran and other languages. GCC is not to be confused with
+<code class="docutils literal notranslate"><span class="pre">gcc</span></code>, which is the GNU C compiler, one of the components in GCC. On  the
+Linux system of the cluster, the built-in GCC version may be too old  (e.g. on
+CentOS 6, this is GCC 4.4.7) for building (compiling) some applications that
+requires the language features not yet supported by that version of GCC. To
+build these applications on an HPC cluster, such as UCLA Hoffman2 cluster, it is
+necessary to install a newer version of GCC on the system. A common
+misconception is to assume that installing a new GCC requires Linux system
+administrator privilege. This is false. In fact, a regular user can install
+virtually any version of GCC available, or most open-source application
+programs, under the home directory independently using existing tools available
+on the cluster. In this technical note, we discuss the process of installing GCC
+9. We note by passing that the process of installing other versions of GCC is
+similar, if not identical. The process of installing many other GNU software
+packages is also largely the same.</p>
+
+      <p><a href="../../gcc-9-building/">Read more ...</a></p>
+      <hr>
+    </div>
+    
+    
+  </div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../">Research Computing Topics</a></h1>
+
+
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/">About the group</a></li>
+</ul>
+
+
+  <h3><a href="../../">Recent Posts</a></h3>
+  <ul>
+    
+    
+      <li><a href="../../rstudio-virtual-memory/">11 June - Virtual Memory Size of Launching RStudio on Hoffman2 Cluster</a></li>
+    
+      <li><a href="../../matlab-virtual-memory/">08 June - Virtual Memory Consumption of Matlab Graphical User Interface on Hoffman2 Cluster</a></li>
+    
+      <li><a href="../../julia-avx512/">08 June - Julia AVX512 Issue and Workaround</a></li>
+    
+      <li><a href="../../../julia-avx512/">08 June - Julia AVX512 Issue and Workaround</a></li>
+    
+      <li><a href="../../gcc-9-building/">20 May - Building GCC Compilers on an HPC Cluster</a></li>
+    
+  </ul>
+
+  <h3><a href="../../tag/">Tags</a></h3>
+  <style type="text/css">
+    ul.ablog-cloud {list-style: none; overflow: auto;}
+    ul.ablog-cloud li {float: left; height: 20pt; line-height: 18pt; margin-right: 5px;}
+    ul.ablog-cloud a {text-decoration: none; vertical-align: middle;}
+    li.ablog-cloud-1{font-size: 80%;}
+    li.ablog-cloud-2{font-size: 95%;}
+    li.ablog-cloud-3{font-size: 110%;}
+    li.ablog-cloud-4{font-size: 125%;}
+    li.ablog-cloud-5{font-size: 140%;}
+  </style>
+  <ul class="ablog-cloud">
+    
+      
+      <li class="ablog-cloud ablog-cloud-5">
+        <a href="../../tag/blog/">blog</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../../tag/gcc/">gcc</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../../tag/gnu/">gnu</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../../tag/matlab/">matlab</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../../tag/rstudio/">rstudio</a></li>
+      
+    
+  </ul>
+
+  <h3><a href="../../archive/">Archives</a></h3>
+  <ul>
+  
+    
+    <li><a href="../../2020/">2020 (6)</a></li>
+    
+  
+  </ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, HPC Research Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

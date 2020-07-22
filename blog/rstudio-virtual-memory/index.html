@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Memory Size of Launching RStudio on Hoffman2 Cluster &#8212; Research Computing Topics  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="author" title="About these documents" href="../../about/" />
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+  
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="virtual-memory-size-of-launching-rstudio-on-hoffman2-cluster">
+<h1>Virtual Memory Size of Launching RStudio on Hoffman2 Cluster<a class="headerlink" href="#virtual-memory-size-of-launching-rstudio-on-hoffman2-cluster" title="Permalink to this headline">¶</a></h1>
+<p>We report that the virtual memory size of launching RStudio (version 1.1.456)
+is approximately 2.3GB (gigabytes) <em>without</em> loading any user data on
+Hoffman2 Cluster’s compute nodes.
+This is compared to RStudio version 0.98, which consumes approximately 1.6GB of virtual memory at launch time.
+The implication is that a job will have to
+request at least this much memory in order to launch RStudio successfully.</p>
+<p>We launched RStudio 1.1.456 distributed by Anaconda using the following
+commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span> /u/local/Modules/default/init/bash
+module load anaconda3/2019.03
+<span class="nb">source</span> <span class="nv">$CONDA_DIR</span>/etc/profile.d/conda.sh
+conda activate rstudio
+rstudio
+</pre></div>
+</div>
+<p>The virtual memory size reading was from the <code class="docutils literal notranslate"><span class="pre">top</span></code> command. We have tested
+Rstudio on various CPU models, including Intel Gold (Skylake), Intel E5-2670
+and AMD-6136. The virtual memory size was approximately the same across
+different CPU models.</p>
+<a class="reference internal image-reference" href="../../_images/rstudio.png"><img alt="Rstudio logo" src="../../_images/rstudio.png" style="width: 500px;" /></a>
+</div>
+
+  <div class="section">
+  
+    
+
+
+<div class="section">
+  <span style="float: left;">
+  
+  Previous: 
+  <a href="../matlab-virtual-memory/">
+    
+    Virtual Memory Consumption of Matlab Graphical User Interface on Hoffman2 Cluster
+  </a>
+  
+  </span>
+  <span>&nbsp;</span>
+  <span style="float: right;">
+  
+  </span>
+</div>
+
+  
+  
+  </div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../">Research Computing Topics</a></h1>
+
+
+
+
+
+
+
+
+
+  
+  
+  <h2>
+  
+  
+    2020-06-11
+  
+  </h2>
+
+  <ul>
+    
+
+  
+  <li id="author"><span>Author:</span>
+    
+      
+      <a href="../author/shao-ching-huang/">Shao-Ching Huang</a>
+      
+    </li>
+  
+
+  
+
+  
+
+  
+
+  
+  <li id="tags"><span>Tag:</span>
+    
+      
+      <a href="../tag/rstudio/">rstudio</a>
+      
+    </li>
+  
+  
+  </ul>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about/">About the group</a></li>
+</ul>
+
+
+  <h3><a href="../">Recent Posts</a></h3>
+  <ul>
+    
+    
+      <li><a href="../matlab-virtual-memory/">08 June - Virtual Memory Consumption of Matlab Graphical User Interface on Hoffman2 Cluster</a></li>
+    
+      <li><a href="../julia-avx512/">08 June - Julia AVX512 Issue and Workaround</a></li>
+    
+      <li><a href="../../julia-avx512/">08 June - Julia AVX512 Issue and Workaround</a></li>
+    
+      <li><a href="../gcc-9-building/">20 May - Building GCC Compilers on an HPC Cluster</a></li>
+    
+      <li><a href="../post-test/">11 May - Welcome!</a></li>
+    
+  </ul>
+
+  <h3><a href="../tag/">Tags</a></h3>
+  <style type="text/css">
+    ul.ablog-cloud {list-style: none; overflow: auto;}
+    ul.ablog-cloud li {float: left; height: 20pt; line-height: 18pt; margin-right: 5px;}
+    ul.ablog-cloud a {text-decoration: none; vertical-align: middle;}
+    li.ablog-cloud-1{font-size: 80%;}
+    li.ablog-cloud-2{font-size: 95%;}
+    li.ablog-cloud-3{font-size: 110%;}
+    li.ablog-cloud-4{font-size: 125%;}
+    li.ablog-cloud-5{font-size: 140%;}
+  </style>
+  <ul class="ablog-cloud">
+    
+      
+      <li class="ablog-cloud ablog-cloud-5">
+        <a href="../tag/blog/">blog</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../tag/gcc/">gcc</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../tag/gnu/">gnu</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../tag/matlab/">matlab</a></li>
+      
+    
+      
+      <li class="ablog-cloud ablog-cloud-1">
+        <a href="../tag/rstudio/">rstudio</a></li>
+      
+    
+  </ul>
+
+  <h3><a href="../archive/">Archives</a></h3>
+  <ul>
+  
+    
+    <li><a href="../2020/">2020 (6)</a></li>
+    
+  
+  </ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, HPC Research Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/blog/rstudio-virtual-memory.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
